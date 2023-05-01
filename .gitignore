@@ -1,1 +1,18 @@
-code-reference/
+# Exclude
+# In reference-code
+reference-code/agentModionPrediction.ipynb
+reference-code/agentModionPrediction_config.yaml
+reference-code/sequentialANN.ipynb
+reference-code/yolopV2Onnx.ipynb
+reference-code/yolopV2Onnx_convert.ipynb
+# In yolopV2
+reference-code/yolopV2/data
+reference-code/yolopV2/demo.py
+reference-code/yolopV2/mainNotebook.ipynb
+reference-code/yolopV2/runs
+reference-code/yolopV2/utils
+
+# Include
+# In yolopV2
+!reference-code/yolopV2/demoBatch.bat
+!reference-code/yolopV2/demoNotebook.ipynb
