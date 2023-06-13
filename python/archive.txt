@@ -1,0 +1,134 @@
+"""Unused functions kept in case of future requirement"""
+
+
+## corner_detection - main function
+def harris(src:np.ndarray):
+    src = np.float32(np.digitize(src,[0.5]))
+    ## Preprocess
+    if len(src.shape) > 2:
+        ## Make greyscale copy
+        gray = src[:,:,1]
+    else:
+        gray = src
+        ## Convert geryscale to RGB
+        src = np.dstack([np.zeros_like(src), src, np.zeros_like(src)])
+    gray = np.float32(gray)
+    # dst = cv2.cornerHarris(gray,2,3,0.04)   ## Default
+    # dst = cv2.cornerHarris(gray,2,3,0.2)   ## For 160x80
+    dst = cv2.cornerHarris(gray,10,31,0)     ## For upscaled
+    ## Result is dilated for marking the corners, not important
+    dst = cv2.dilate(dst,None)
+    ## Threshold for an optimal value, it may vary depending on the image.
+    src[dst>0.1*dst.max()]=[255,0,0]
+    return src
+
+
+## angle_calculation - Calculator class
+def plotoverlay_plt(self, colour_trajectory:str="yellow", colour_road:str="red"):
+    """Plot calculated tracjetory, lane lines, and self trajectory
+    onto input image
+    """
+    self.figure = plt.figure("Road trajectory detection")
+    ## Place frame boundary
+    plt.plot(self.framesize[0],self.framesize[1],".", markersize=0)
+    ## Plot detected road
+    # leftline_x = np.array([self.overlay[0,0], self.overlay[1,0]])
+    # leftline_y = np.array([self.overlay[0,1], self.overlay[1,1]])
+    # rightline_x = np.array([self.overlay[2,0], self.overlay[3,0]])
+    # rightline_y = np.array([self.overlay[2,1], self.overlay[3,1]])
+    leftline_x = self.overlay[:,0,0]
+    leftline_y = self.overlay[:,0,1]
+    rightline_x = self.overlay[:,1,0]
+    rightline_y = self.overlay[:,1,1]
+    plot_leftline, = plt.plot(leftline_x,leftline_y,".",  markersize=0,
+            linestyle="-", color=colour_road)
+    plot_rightline, = plt.plot(rightline_x,rightline_y,".",  markersize=0,
+            linestyle="-", color=colour_road)
+    ## Plot centerline
+    plot_centerline, = plt.plot([self.framesize[0]/2, self.framesize[0]/2],[0, self.framesize[1]], 
+                color="orange")
+    ## Plot lane trajectory
+    trajectory_x = np.array([self.trajectory[0,0], self.trajectory[1,0]])
+    trajectory_y = np.array([self.trajectory[0,1], self.trajectory[1,1]])
+    plot_trajectory, = plt.plot(trajectory_x,trajectory_y,".",  markersize=0,
+                            linestyle="-", color=colour_trajectory)
+    plt.legend([plot_centerline, plot_leftline, plot_trajectory],
+                ["Assumed vehicle trajectory", "Detected lane line","Calculated road trajectory"])
+    plt.imshow(self.image, origin="lower")
+
+
+## angle_calculation - Calculator class
+def plotoverlay_plt(self, colour_trajectory:str="yellow", colour_road:str="red"):
+    """Plot calculated tracjetory, lane lines, and self trajectory
+    onto input image
+    """
+    self.figure = plt.figure("Road trajectory detection")
+    ## Place frame boundary
+    plt.plot(self.framesize[0],self.framesize[1],".", markersize=0)
+    ## Plot detected road
+    # leftline_x = np.array([self.coordinates[0,0], self.coordinates[1,0]])
+    # leftline_y = np.array([self.coordinates[0,1], self.coordinates[1,1]])
+    # rightline_x = np.array([self.coordinates[2,0], self.coordinates[3,0]])
+    # rightline_y = np.array([self.coordinates[2,1], self.coordinates[3,1]])
+    leftline_x = self.coordinates[:,0,1]
+    leftline_y = self.coordinates[:,0,0]
+    rightline_x = self.coordinates[:,1,1]
+    rightline_y = self.coordinates[:,1,0]
+    plot_leftline, = plt.plot(leftline_x,leftline_y,".",  markersize=0,
+            linestyle="-", color=colour_road)
+    plot_rightline, = plt.plot(rightline_x,rightline_y,".",  markersize=0,
+            linestyle="-", color=colour_road)
+    ## Plot centerline
+    plot_centerline, = plt.plot([self.framesize[0]/2, self.framesize[0]/2],
+                                [0, self.framesize[1]], color="orange")
+    ## Plot lane trajectory
+    trajectory_x = np.array([self.trajectory[0,0], self.trajectory[1,0]])
+    trajectory_y = np.array([self.trajectory[0,1], self.trajectory[1,1]])
+    plot_trajectory, = plt.plot(trajectory_x,trajectory_y,".",  markersize=0,
+                            linestyle="-", color=colour_trajectory)
+    plt.legend([plot_centerline, plot_leftline, plot_trajectory],
+                ["Assumed vehicle trajectory", "Detected lane line","Calculated road trajectory"])
+    plt.imshow(self.image)
+
+
+## angle_calculation - script
+def plotonimage():
+    """Plot a figure over and image, and save 
+    as a numpy array
+    """
+
+    # Load the image and convert it to a NumPy array
+    image = Image.open('image.png')
+    image_array = np.array(image)
+
+    # Calculate the figure size in inches (width, height)
+    dpi = 100
+    height, width, _ = image_array.shape
+    figsize = width / dpi, height / dpi
+
+    # Create a figure and axes with the calculated size
+    fig, ax = plt.subplots(figsize=figsize, dpi=dpi)
+
+    # Adjust subplot parameters to remove white border
+    fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
+
+    # Display the image on the axes
+    ax.imshow(image_array)
+
+    # Plot lines on the image
+    x = [100, 200, 300]
+    y = [50, 150, 250]
+    ax.plot(x, y, color='red', linewidth=2)
+
+    # Remove axis ticks and labels
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    # Save the figure as a NumPy array
+    fig.canvas.draw()
+    result_array = np.array(fig.canvas.renderer.buffer_rgba())
+
+    # Close the figure to free up memory
+    # plt.close(fig)
+    plt.imshow(result_array)
+    plt.show()

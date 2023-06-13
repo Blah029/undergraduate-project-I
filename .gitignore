@@ -1,4 +1,7 @@
 # Exclude
+# VSCode files
+**__pycache__
+**tempCodeRunnerFile.py
 # In reference-code
 reference-code/agentModionPrediction.ipynb
 reference-code/agentModionPrediction_config.yaml
