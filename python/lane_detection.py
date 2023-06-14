@@ -96,7 +96,7 @@ class Detector:
             cv2.imwrite(f"{dir_dump}\\{self.framecount-1}-4_trajectoryimage.png",self.result[:,:,::-1])
         return self.result
 
-
+## Set up the logger
 logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
 logger = logging.getLogger("corner-detection")
 ## Script
