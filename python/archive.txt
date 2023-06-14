@@ -1,4 +1,4 @@
-"""Unused functions kept in case of future requirement"""
+"""Deprecated functions kept in case of future requirement"""
 
 
 ## corner_detection - main function

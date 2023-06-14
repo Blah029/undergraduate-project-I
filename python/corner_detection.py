@@ -8,7 +8,7 @@ import numpy as np
 import angle_calculation
 
 
-def bruteforce(image:np.ndarray):
+def linesearch(image:np.ndarray):
     image = np.float32(np.digitize(image,[0.5]))
     rows = np.array([40, 59])
     corners = np.zeros((2,2,2))
@@ -30,6 +30,7 @@ def bruteforce(image:np.ndarray):
 ## Set up the logger
 logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
 logger = logging.getLogger("corner-detection")
+## Script
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     ## Read image
@@ -37,7 +38,7 @@ if __name__ == "__main__":
     detectedlanes = plt.imread(f"{inputdir}\\frame_fitaverage.png")  ## 160x80
     image = plt.imread(f"{inputdir}\\frame_result.png") 
 
-    corners = bruteforce(detectedlanes)
+    corners = linesearch(detectedlanes)
     logger.debug(f"coordinates: \n{corners}")
 
     def test():

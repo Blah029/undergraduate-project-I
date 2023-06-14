@@ -17,6 +17,7 @@ class Detector:
         self.dumpframes = dumpframes
         self.framecount = 0
         self.predection_recent = []
+        self.corners_recent = []
 
     def detect(self, image:np.ndarray=None):
         """Run prediction and get lane probability of each pixel"""
@@ -27,8 +28,8 @@ class Detector:
         self.img_resized = cv2.resize(self.image,(160, 80))
         self.img_resized = self.img_resized[None,:,:,:]
         ## Recent
-        self.prediction = model.predict(self.img_resized)[0] * 255
-        self.predection_recent.append(self.prediction)
+        prediction = model.predict(self.img_resized)[0] * 255
+        self.predection_recent.append(prediction)
         ## Moving average
         if len(self.predection_recent) > 5:
             self.predection_recent = self.predection_recent[1:]
@@ -75,9 +76,16 @@ class Detector:
     def overlay_all(self,image):
         self.image = image
         self.detect()
-        corners = corner.bruteforce(self.prediction_average)
+        ## Recent
+        corners = corner.linesearch(self.prediction_average)
+        self.corners_recent.append(corners)
+        ## Moving average
+        if len(self.corners_recent) > 5:
+            self.corners_recent = self.corners_recent[1:]
+        self.corners_average = \
+            np.mean(np.array([i for i in self.corners_recent]), axis = 0)
         # logger.debug(f"corners: \n{corners}")
-        calculator = angle.Calculator(self.image,corners)
+        calculator = angle.Calculator(self.image,self.corners_average)
         self.image = calculator.image
         self.result = cv2.addWeighted(self.image,1,self.predection_rgb,0.25,0, 
                                               dtype=cv2.CV_32F)
@@ -91,6 +99,7 @@ class Detector:
 
 logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
 logger = logging.getLogger("corner-detection")
+## Script
 if __name__ == "__main__":
     ## Set up the logger
     logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
@@ -144,6 +153,6 @@ if __name__ == "__main__":
             f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated.MP4"
             )
         
-    detect_clip(14,24)
-    detect_full()
+    # detect_clip(14,24)
+    # detect_full()
     detectncalculate_clip(14,24)
