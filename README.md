@@ -1,6 +1,6 @@
 # undergraduate-project
 
-4th year EE405: Undergraduate Project  
+Final year EE405: Undergraduate Project  
 
 - Group G8
   - E/17/099 - Gunathilaka M.T.V.
