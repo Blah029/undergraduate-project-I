@@ -10,10 +10,11 @@ import corner_detection as corner
 
 
 class Detector:
-    def __init__(self, dumpframes:bool=False):
+    def __init__(self, confidence:float=0.5, dumpframes:bool=False):
         """Initialise Detector class containig immediate and moving average 
         probabiltiies of each pixel be part of a lane"""
         ## Store average and recent predictions
+        self.confidence = confidence
         self.dumpframes = dumpframes
         self.framecount = 0
         self.predection_recent = []
@@ -29,23 +30,30 @@ class Detector:
         self.img_resized = self.img_resized[None,:,:,:]
         ## Recent
         prediction = model.predict(self.img_resized)[0] * 255
+        logger.debug(f"predection max: {np.max(prediction)}")
         self.predection_recent.append(prediction)
         ## Moving average
         if len(self.predection_recent) > 5:
             self.predection_recent = self.predection_recent[1:]
         self.prediction_average = \
             np.mean(np.array([i for i in self.predection_recent]), axis = 0)
+        logger.debug(f"predection_average max: {np.max(self.prediction_average)}")
         ## Clip top and bottom
         self.prediction_average[:40,:] = \
             np.zeros_like(self.prediction_average[:40,:])
         self.prediction_average[60:,:] = \
             np.zeros_like(self.prediction_average[60:,:])
-        ## Create RGB image
+        ## Resize
         predection_resized = \
             cv2.resize(self.prediction_average,(self.image.shape[1], 
                                                 self.image.shape[0]))
+        logger.debug(f"predection_resized max before clipping: {np.max(predection_resized)}")
+        ## Quantise
         predection_resized = \
-            np.digitize(predection_resized,[0.5])*255
+            np.digitize(predection_resized,
+                        [self.confidence*np.max(predection_resized)])*255
+        logger.debug(f"predection_resized max after clipping: {np.max(predection_resized)}")
+        ## Create RGB image
         blanks = np.zeros_like(predection_resized).astype(np.uint8)
         self.predection_rgb = np.dstack((blanks, predection_resized, blanks))
         ## Dump detection
@@ -104,14 +112,21 @@ if __name__ == "__main__":
     ## Set up the logger
     logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
     logger = logging.getLogger("corner-detection")
-    logger.setLevel(logging.DEBUG)
-    ## Load model
-    dir_model = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models\\MLND-Capstone"
+    logger.setLevel(logging.INFO)
+    ## Set I/O
+    dir_model = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
     dir_input = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
     dir_output = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs"
     vid_name = "localDashcam_1440p_02.MP4"
-    model = keras.models.load_model(f"{dir_model}\\full_CNN_model.h5")
-    detector = Detector()
+    ## Original model
+    # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
+    # confidence = 0.05
+    # label = f"originalmodel_{confidence}"
+    # Duct tape fixed model trained on custom data set of 250 images
+    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_new_500.h5")
+    confidence = 0.5
+    label = f"custommodelv1_{confidence}"
+    detector = Detector(confidence)
     vid_input = VideoFileClip(f"{dir_input}\\{vid_name}", audio=False)
         
     def detect_clip(start:int, end:int):
@@ -123,7 +138,7 @@ if __name__ == "__main__":
         vid_output = vid_trimmed.fl_image(detector.overlay_lane)
         ## Save trimmed video
         vid_output.write_videofile(
-            f"{dir_output}\\trimmed_{vid_name[:-4]}_detected.MP4"
+            f"{dir_output}\\trimmed_{vid_name[:-4]}_detected_{label}.MP4"
             )
         
     def detect_full():
@@ -133,7 +148,7 @@ if __name__ == "__main__":
         vid_output = vid_input.fl_image(detector.overlay_lane)
         # Save video
         vid_output.write_videofile(
-            f"{dir_output}\\{vid_name[:-4]}_detected.MP4"
+            f"{dir_output}\\{vid_name[:-4]}_detected_{label}.MP4"
             )
     
     def detectncalculate_clip(start:int, end:int):
@@ -142,7 +157,7 @@ if __name__ == "__main__":
         vid_trimmed = vid_input.subclip(start,end)
         vid_output = vid_trimmed.fl_image(detector.overlay_all)
         vid_output.write_videofile(
-            f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated.MP4"
+            f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated_{label}.MP4"
             )
         
     def detectncalculate_full():
@@ -150,9 +165,9 @@ if __name__ == "__main__":
         detector.dumpframes = False
         vid_output = vid_input.fl_image(detector.overlay_all)
         vid_output.write_videofile(
-            f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated.MP4"
+            f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated_{label}.MP4"
             )
         
-    # detect_clip(14,24)
-    # detect_full()
-    detectncalculate_clip(14,24)
+    # detect_clip(14,19)
+    detect_full()
+    # detectncalculate_clip(14,24)
