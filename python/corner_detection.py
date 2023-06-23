@@ -9,19 +9,34 @@ import angle_calculation
 
 
 def linesearch(image:np.ndarray):
-    image = np.float32(np.digitize(image,[0.5]))
+    # image = np.float32(np.digitize(image,[confidence*np.max(image)]))
     rows = np.array([40, 59])
     corners = np.zeros((2,2,2))
-    flag_lane = False
+    # flag_lane = False
     for i,row in enumerate(rows):
+        flag_left = False
+        flag_right = False
         j = 0
         for k,pixel in enumerate(image[row]):
-            if flag_lane == False and pixel > 0.5:
+            # ## Left
+            # if flag_lane == False and pixel > 0.5:
+            #     corners[i,j] = np.array([row, k])
+            #     flag_lane = True
+            # ## Right
+            # if flag_lane == True and pixel < 0.5:
+            #     corners[i,j+1] = np.array([row, k])
+            #     flag_lane = False
+            #     j += 1
+            #     break
+            ## Left
+            if flag_left == False and image[row,k] > 0.5:
                 corners[i,j] = np.array([row, k])
-                flag_lane = True
-            if flag_lane == True and pixel < 0.5:
-                corners[i,j+1] = np.array([row, k])
-                flag_lane = False
+                flag_left = True
+            ## Right
+            if flag_right == False and image[row,-k-1] > 0.5:
+                corners[i,j+1] = np.array([row, 2*image.shape[0]-k])
+                flag_right = True
+            if flag_left and flag_right:
                 j += 1
                 break
     return corners

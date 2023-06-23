@@ -37,22 +37,27 @@ class Detector:
             self.predection_recent = self.predection_recent[1:]
         self.prediction_average = \
             np.mean(np.array([i for i in self.predection_recent]), axis = 0)
-        logger.debug(f"predection_average max: {np.max(self.prediction_average)}")
-        ## Clip top and bottom
+        logger.debug(f"predection_average max: {np.max(self.prediction_average)}, shape: {self.prediction_average.shape}")
+        ## Crop
         self.prediction_average[:40,:] = \
             np.zeros_like(self.prediction_average[:40,:])
         self.prediction_average[60:,:] = \
             np.zeros_like(self.prediction_average[60:,:])
+        ## Quantise
+        self.prediction_average = \
+            np.digitize(self.prediction_average,
+                        [self.confidence*np.max(self.prediction_average)])*255.0
+        logger.debug(f"self.prediction_average max after quantising: {np.max(self.prediction_average)}")
         ## Resize
         predection_resized = \
             cv2.resize(self.prediction_average,(self.image.shape[1], 
                                                 self.image.shape[0]))
-        logger.debug(f"predection_resized max before clipping: {np.max(predection_resized)}")
+        logger.debug(f"predection_resized max: {np.max(predection_resized)}")
         ## Quantise
-        predection_resized = \
-            np.digitize(predection_resized,
-                        [self.confidence*np.max(predection_resized)])*255
-        logger.debug(f"predection_resized max after clipping: {np.max(predection_resized)}")
+        # predection_resized = \
+        #     np.digitize(predection_resized,
+        #                 [self.confidence*np.max(predection_resized)])*255
+        # logger.debug(f"predection_resized max after quantising: {np.max(predection_resized)}")
         ## Create RGB image
         blanks = np.zeros_like(predection_resized).astype(np.uint8)
         self.predection_rgb = np.dstack((blanks, predection_resized, blanks))
@@ -112,7 +117,7 @@ if __name__ == "__main__":
     ## Set up the logger
     logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
     logger = logging.getLogger("corner-detection")
-    logger.setLevel(logging.INFO)
+    # logger.setLevel(logging.DEBUG)
     ## Set I/O
     dir_model = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
     dir_input = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
@@ -122,10 +127,15 @@ if __name__ == "__main__":
     # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
     # confidence = 0.05
     # label = f"originalmodel_{confidence}"
-    # Duct tape fixed model trained on custom data set of 250 images
-    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_new_500.h5")
-    confidence = 0.5
+    ## Duct tape fixed model trained on custom data set of 250 images
+    # model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v0.h5")
+    # confidence = 0.45
+    # label = f"custommodelv0_{confidence}"
+    ## Fixed model trained on custom data set of 250 images
+    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v1.h5")
+    confidence = 0.35
     label = f"custommodelv1_{confidence}"
+    ## Perform detection
     detector = Detector(confidence)
     vid_input = VideoFileClip(f"{dir_input}\\{vid_name}", audio=False)
         
@@ -153,7 +163,7 @@ if __name__ == "__main__":
     
     def detectncalculate_clip(start:int, end:int):
         """Test anlge_calculation module integration"""
-        detector.dumpframes = False
+        detector.dumpframes = True
         vid_trimmed = vid_input.subclip(start,end)
         vid_output = vid_trimmed.fl_image(detector.overlay_all)
         vid_output.write_videofile(
@@ -165,9 +175,10 @@ if __name__ == "__main__":
         detector.dumpframes = False
         vid_output = vid_input.fl_image(detector.overlay_all)
         vid_output.write_videofile(
-            f"{dir_output}\\trimmed_{vid_name[:-4]}_calculated_{label}.MP4"
+            f"{dir_output}\\{vid_name[:-4]}_calculated_{label}.MP4"
             )
         
     # detect_clip(14,19)
-    detect_full()
-    # detectncalculate_clip(14,24)
+    # detect_full()
+    detectncalculate_clip(14,19)
+    # detectncalculate_full()
