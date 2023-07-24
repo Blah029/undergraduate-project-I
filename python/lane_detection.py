@@ -43,7 +43,7 @@ class Detector:
             np.zeros_like(self.prediction_average[:40,:])
         self.prediction_average[60:,:] = \
             np.zeros_like(self.prediction_average[60:,:])
-        ## Quantise
+        # Quantise
         self.prediction_average = \
             np.digitize(self.prediction_average,
                         [self.confidence*np.max(self.prediction_average)])*255.0
@@ -121,20 +121,20 @@ if __name__ == "__main__":
     ## Set I/O
     dir_model = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
     dir_input = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
-    dir_output = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs"
+    dir_output = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\Open Day"
     vid_name = "localDashcam_1440p_02.MP4"
     ## Original model
-    # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
     # confidence = 0.05
+    # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
     # label = f"originalmodel_{confidence}"
     ## Duct tape fixed model trained on custom data set of 250 images
-    # model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v0.h5")
+    # model_version = 0
     # confidence = 0.45
-    # label = f"custommodelv0_{confidence}"
     ## Fixed model trained on custom data set of 250 images
-    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v1.h5")
+    model_version = 3
     confidence = 0.35
-    label = f"custommodelv1_{confidence}"
+    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v{model_version}.h5")
+    label = f"custommodelv{model_version}_{confidence}"
     ## Perform detection
     detector = Detector(confidence)
     vid_input = VideoFileClip(f"{dir_input}\\{vid_name}", audio=False)
@@ -178,7 +178,7 @@ if __name__ == "__main__":
             f"{dir_output}\\{vid_name[:-4]}_calculated_{label}.MP4"
             )
         
-    # detect_clip(14,19)
+    # detect_clip(3,6)
     # detect_full()
-    detectncalculate_clip(14,19)
-    # detectncalculate_full()
+    # detectncalculate_clip(14,19)
+    detectncalculate_full()

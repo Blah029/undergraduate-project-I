@@ -59,6 +59,8 @@ class Calculator:
         self.trajectory = np.array([[xt0, yt0], [xt1, yt1]]).astype("int")
         ## Angle before perspective adjustment
         self.angle = math.degrees(math.atan((xt0-xt1)/(yt1-yt0)))
+        self.offset = (xt0 - (xl0+xr0)/2)/((xl0+xr0)/2 - xl0)*100
+        self.product = self.angle*self.offset
 
 
     def plotoverlay_cv2(self, colour_road:str=(255,0,0), 
@@ -84,6 +86,31 @@ class Calculator:
         ## Road trajectory
         cv2.line(self.image,self.trajectory[0],self.trajectory[1],
                  colour_trajectory,thickness)
+        ## Text
+        cv2.putText(self.image, f"Angle: {self.angle:7.0f} deg",
+                    (int(self.image.shape[1]*0.66),
+                     int(self.image.shape[0]*0.14)),
+                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+        cv2.putText(self.image, f"Offset: {self.offset:5.0f} %",
+                    (int(self.image.shape[1]*0.66),
+                     int(self.image.shape[0]*0.20)),
+                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+        cv2.putText(self.image, f"Product: {self.product:4.0f}",
+                    (int(self.image.shape[1]*0.66),
+                     int(self.image.shape[0]*0.26)),
+                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+        if np.abs(self.angle) > 40 \
+            or np.abs(self.offset) > 99 \
+            or self.product < -5*20:
+            cv2.putText(self.image, f"DEPARTURE WARNING",
+                        (int(self.image.shape[1]*0.66),
+                        int(self.image.shape[0]*0.32)),
+                        cv2.FONT_HERSHEY_PLAIN,5,(255,0,0),6)
+        else:
+            cv2.putText(self.image, f"Safe",
+                        (int(self.image.shape[1]*0.66),
+                        int(self.image.shape[0]*0.32)),
+                        cv2.FONT_HERSHEY_PLAIN,5,(0,255,0),6)
 
 
 ## Set up the logger
