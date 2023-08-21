@@ -49,7 +49,7 @@ logger = logging.getLogger("corner-detection")
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     ## Read image
-    inputdir = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing"
+    inputdir = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing"
     detectedlanes = plt.imread(f"{inputdir}\\frame_fitaverage.png")  ## 160x80
     image = plt.imread(f"{inputdir}\\frame_result.png") 
 

@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     def process_single():
         """Load test image and coordinates pre-obtained coordinates"""
-        image_4 = plt.imread(f"D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing\\frame_result.png")
+        image_4 = plt.imread(f"C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing\\frame_result.png")
         ## Original detection
         overlay_4 = np.array([[[ 40, 67], [ 40, 96]], 
                               [[ 59, 45], [ 59,132]]])
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         """Temporary function to batch process images"""
         images = []
         for i in range(0,6):
-            images.append(plt.imread(f"D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\image-footage\\localDashcam_1080p_04_P{i+1}.png"))
+            images.append(plt.imread(f"C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\image-footage\\localDashcam_1080p_04_P{i+1}.png"))
         overlays = [np.array([[[ 734, 565], [1016, 484]],
                               [[ 249, 902], [1363, 900]]]),
                     np.array([[[ 361, 643], [ 853, 492]], 
@@ -158,7 +158,7 @@ if __name__ == "__main__":
             overlay = overlays[i]
             frame = Calculator(image,overlay)
             logger.info(f"localDashcam_1080p_04_P{i+1} Deviation: {frame.angle}°")
-            plt.savefig(f"D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Algorithm Outputs\\localDashcam_1080p_04_P{i+1}.png", 
+            plt.savefig(f"C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Algorithm Outputs\\localDashcam_1080p_04_P{i+1}.png", 
                         dpi = 330)
             # plt.show()
             plt.close(frame.figure)

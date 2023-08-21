@@ -43,7 +43,7 @@ class Detector:
             np.zeros_like(self.prediction_average[:40,:])
         self.prediction_average[60:,:] = \
             np.zeros_like(self.prediction_average[60:,:])
-        # Quantise
+        ## Quantise
         self.prediction_average = \
             np.digitize(self.prediction_average,
                         [self.confidence*np.max(self.prediction_average)])*255.0
@@ -63,7 +63,7 @@ class Detector:
         self.predection_rgb = np.dstack((blanks, predection_resized, blanks))
         ## Dump detection
         if self.dumpframes == True:
-            dir_dump = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
+            dir_dump = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
             cv2.imwrite(f"{dir_dump}\\{self.framecount}-1_average.png",self.prediction_average)
             cv2.imwrite(f"{dir_dump}\\{self.framecount}-2_resized.png",predection_resized)
             self.framecount += 1
@@ -77,7 +77,7 @@ class Detector:
         self.result = np.clip(self.result,None,255)
         ## Dump result
         if self.dumpframes == True:
-            dir_dump = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
+            dir_dump = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
             cv2.imwrite(f"{dir_dump}\\{self.framecount-1}-3_laneimage.png",self.result[:,:,::-1])
         return self.result
     
@@ -105,7 +105,7 @@ class Detector:
         self.result = np.clip(self.result,None,255)
         ## Dump result
         if self.dumpframes == True:
-            dir_dump = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
+            dir_dump = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\framedump"
             cv2.imwrite(f"{dir_dump}\\{self.framecount-1}-4_trajectoryimage.png",self.result[:,:,::-1])
         return self.result
 
@@ -119,10 +119,11 @@ if __name__ == "__main__":
     logger = logging.getLogger("corner-detection")
     # logger.setLevel(logging.DEBUG)
     ## Set I/O
-    dir_model = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
-    dir_input = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
-    dir_output = "D:\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs\\Open Day"
-    vid_name = "localDashcam_1440p_02.MP4"
+    dir_model = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
+    # dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
+    dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage"
+    dir_output = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs"
+    vid_name = "techodyssey_1080p.MP4"
     ## Original model
     # confidence = 0.05
     # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
@@ -132,7 +133,7 @@ if __name__ == "__main__":
     # confidence = 0.45
     ## Fixed model trained on custom data set of 250 images
     model_version = 3
-    confidence = 0.35
+    confidence = 0.35     ## optimal threshold for daytime
     model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v{model_version}.h5")
     label = f"custommodelv{model_version}_{confidence}"
     ## Perform detection
