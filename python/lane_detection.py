@@ -7,24 +7,37 @@ from tensorflow import keras
 
 import angle_calculation as angle
 import corner_detection as corner
+import retinex
 
 
 class Detector:
-    def __init__(self, confidence:float=0.5, dumpframes:bool=False):
+    def __init__(self, 
+                 confidence:float=0.5, 
+                 dumpframes:bool=False, 
+                 runretinex:bool=False,
+                 sigma:int=100, 
+                 normmode:any="range"):
         """Initialise Detector class containig immediate and moving average 
         probabiltiies of each pixel be part of a lane"""
         ## Store average and recent predictions
         self.confidence = confidence
         self.dumpframes = dumpframes
+        self.runretinex = runretinex
+        self.sigma = sigma
+        self.normmode = normmode
         self.framecount = 0
         self.predection_recent = []
         self.corners_recent = []
 
     def detect(self, image:np.ndarray=None):
         """Run prediction and get lane probability of each pixel"""
-        ## Strip alpha channel and resize image to 160x80
         if image != None:
             self.image = image
+        ## Perform retinex image enhancement
+        if self.runretinex:
+            self.image = retinex.ssr(self.image,self.sigma, 
+                                     norm_mode=self.normmode)
+        ## Strip alpha channel, resize image to 160x80, and add axis
         self.image = self.image[:,:,:3]
         self.img_resized = cv2.resize(self.image,(160, 80))
         self.img_resized = self.img_resized[None,:,:,:]
@@ -120,10 +133,10 @@ if __name__ == "__main__":
     # logger.setLevel(logging.DEBUG)
     ## Set I/O
     dir_model = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
-    # dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
-    dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage"
+    dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
+    # dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage"
     dir_output = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs"
-    vid_name = "techodyssey_1080p.MP4"
+    vid_name = "localDashcam_1440p_02.MP4"
     ## Original model
     # confidence = 0.05
     # model = keras.models.load_model(f"{dir_model}\\MLND-Capstone\\full_CNN_model.h5")
@@ -134,10 +147,14 @@ if __name__ == "__main__":
     ## Fixed model trained on custom data set of 250 images
     model_version = 3
     confidence = 0.35     ## optimal threshold for daytime
-    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v{model_version}.h5")
-    label = f"custommodelv{model_version}_{confidence}"
+    ## Complie separately to fix weight_decay typeerror
+    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v{model_version}.h5", compile=False)
+    model.compile(optimizer='Adam', loss='mean_squared_error')
+    label = f"custommodelv{model_version}_{confidence}_ssr"
     ## Perform detection
     detector = Detector(confidence)
+    ## Configure retinex
+    detector.runretinex = True
     vid_input = VideoFileClip(f"{dir_input}\\{vid_name}", audio=False)
         
     def detect_clip(start:int, end:int):
@@ -181,5 +198,5 @@ if __name__ == "__main__":
         
     # detect_clip(3,6)
     # detect_full()
-    # detectncalculate_clip(14,19)
-    detectncalculate_full()
+    detectncalculate_clip(14,19)
+    # detectncalculate_full()
