@@ -66,10 +66,12 @@ class Calculator:
     def plotoverlay_cv2(self, colour_road:str=(255,0,0), 
                         colour_trajectory:tuple=(255,128,0), 
                         colour_centre:tuple=(255,255,0), 
-                        thickness:int=10):
+                        line_thickness:int=10):
         """Plot calculated tracjetory, lane lines, and self trajectory
         onto input image
         """
+        font_scale = int(5*self.framesize[1]/1440)
+        font_thickness = int(6*self.framesize[1]/1440)
         ## Ego trajectory
         # logger.debug(f"framesize: {self.framesize}")
         # logger.debug(f"framsize/2 as int: {np.array(self.framesize/2).astype('int')}")
@@ -77,40 +79,45 @@ class Calculator:
         cv2.line(self.image,
                  np.array(self.framesize/2).astype("int"),
                  np.array([self.framesize[0]/2, self.framesize[1]]).astype("int"),
-                 colour_centre,thickness)
+                 colour_centre,line_thickness)
         ## Lane lines
         cv2.line(self.image,self.coordinates[0,0,::-1],self.coordinates[1,0,::-1], 
-                 colour_road,thickness)
+                 colour_road,line_thickness)
         cv2.line(self.image,self.coordinates[0,1,::-1],self.coordinates[1,1,::-1], 
-                 colour_road,thickness)
+                 colour_road,line_thickness)
         ## Road trajectory
         cv2.line(self.image,self.trajectory[0],self.trajectory[1],
-                 colour_trajectory,thickness)
+                 colour_trajectory,line_thickness)
         ## Text
         cv2.putText(self.image, f"Angle: {self.angle:7.0f} deg",
                     (int(self.image.shape[1]*0.66),
                      int(self.image.shape[0]*0.14)),
-                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+                    cv2.FONT_HERSHEY_PLAIN,
+                    font_scale,colour_trajectory,font_thickness)
         cv2.putText(self.image, f"Offset: {self.offset:5.0f} %",
                     (int(self.image.shape[1]*0.66),
                      int(self.image.shape[0]*0.20)),
-                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+                    cv2.FONT_HERSHEY_PLAIN,
+                    font_scale,colour_trajectory,font_thickness)
         cv2.putText(self.image, f"Product: {self.product:4.0f}",
                     (int(self.image.shape[1]*0.66),
                      int(self.image.shape[0]*0.26)),
-                    cv2.FONT_HERSHEY_PLAIN,5,colour_trajectory,6)
+                    cv2.FONT_HERSHEY_PLAIN,
+                    font_scale,colour_trajectory,font_thickness)
         if np.abs(self.angle) > 40 \
             or np.abs(self.offset) > 99 \
             or self.product < -5*20:
             cv2.putText(self.image, f"DEPARTURE WARNING",
                         (int(self.image.shape[1]*0.66),
                         int(self.image.shape[0]*0.32)),
-                        cv2.FONT_HERSHEY_PLAIN,5,(255,0,0),6)
+                        cv2.FONT_HERSHEY_PLAIN,
+                        font_scale,(255,0,0),font_thickness)
         else:
             cv2.putText(self.image, f"Safe",
                         (int(self.image.shape[1]*0.66),
                         int(self.image.shape[0]*0.32)),
-                        cv2.FONT_HERSHEY_PLAIN,5,(0,255,0),6)
+                        cv2.FONT_HERSHEY_PLAIN,
+                        font_scale,(0,255,0),font_thickness)
 
 
 ## Set up the logger
@@ -122,7 +129,8 @@ if __name__ == "__main__":
 
     def process_single():
         """Load test image and coordinates pre-obtained coordinates"""
-        image_4 = plt.imread(f"C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing\\frame_result.png")
+        dir = f"C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing"
+        image_4 = plt.imread(f"{dir}\\frame_result_1080p.png")
         ## Original detection
         overlay_4 = np.array([[[ 40, 67], [ 40, 96]], 
                               [[ 59, 45], [ 59,132]]])

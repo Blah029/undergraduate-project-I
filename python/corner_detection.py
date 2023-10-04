@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ## Read image
     inputdir = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Post Processing"
     detectedlanes = plt.imread(f"{inputdir}\\frame_fitaverage.png")  ## 160x80
-    image = plt.imread(f"{inputdir}\\frame_result.png") 
+    image = plt.imread(f"{inputdir}\\frame_result_1440p.png") 
 
     corners = linesearch(detectedlanes)
     logger.debug(f"coordinates: \n{corners}")
