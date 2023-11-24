@@ -1,5 +1,5 @@
 """Engance images using Single-Scale Retinex (SSR), Multi-Scale Retinex (MSR), 
-MSR with Colour Restoration (MSRCR), or MSR with Colour Preservation (MSRCP)
+and MSR with Colour Restoration (MSRCR)
 
 References:
     - https://docs.opencv.org/4.x/d4/d86/group__imgproc__filter.html
@@ -223,6 +223,6 @@ if __name__ == "__main__":
                 cv2.imwrite(f"{dir_out}\\retinex_msrcr\\{filename[:-4]}_msrcr.png",image_out)
     
 
-    # run_ssr(test=False)
+    run_ssr(test=False)
     # run_msr(test=False)
-    run_msrcr(test=True)
+    # run_msrcr(test=True)

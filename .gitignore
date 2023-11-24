@@ -3,11 +3,10 @@
 **__pycache__
 **tempCodeRunnerFile.py
 # In reference-code
-reference-code/agentModionPrediction.ipynb
-reference-code/agentModionPrediction_config.yaml
-reference-code/sequentialANN.ipynb
-reference-code/yolopV2Onnx.ipynb
-reference-code/yolopV2Onnx_convert.ipynb
+reference-code/Low_Light_Image_Enhancement
+reference-code/pix2pix
+reference-code/postgrad-isuru
+reference-code/refign
 # In yolopV2
 reference-code/yolopV2/data
 reference-code/yolopV2/demo.py

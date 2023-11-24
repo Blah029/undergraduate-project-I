@@ -95,11 +95,15 @@ class Detector:
         return self.result
     
     def replace_lane(self,image):
+        """Replace image with lane detection mask"""
         self.image = image
         self.detect()
         return self.predection_rgb
     
     def overlay_all(self,image):
+        """Overlay lane detection, angle deviation, positional deviation and 
+        departure warning onto the image
+        """
         self.image = image
         self.detect()
         ## Recent
@@ -127,12 +131,9 @@ logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
 logger = logging.getLogger("corner-detection")
 ## Script
 if __name__ == "__main__":
-    ## Set up the logger
-    logging.basicConfig(format="[%(name)s][%(levelname)s] %(message)s")
-    logger = logging.getLogger("corner-detection")
     # logger.setLevel(logging.DEBUG)
     ## Set I/O
-    dir_model = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models"
+    dir_model = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Models\\FCNN"
     # dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage\\local-dashcam"
     dir_input = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\video-footage"
     dir_output = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Model Outputs"
@@ -148,7 +149,7 @@ if __name__ == "__main__":
     model_version = 3
     confidence = 0.35     ## optimal threshold for daytime
     ## Complie separately to fix weight_decay typeerror
-    model = keras.models.load_model(f"{dir_model}\\Custom\\test_model_v{model_version}.h5", compile=False)
+    model = keras.models.load_model(f"{dir_model}\\test_model_v{model_version}.h5", compile=False)
     model.compile(optimizer='Adam', loss='mean_squared_error')
     label = f"custommodelv{model_version}_{confidence}_msrcr"
     ## Perform detection
@@ -172,7 +173,7 @@ if __name__ == "__main__":
         
     def detect_full():
         """Perform lane detection on a full a video"""
-        detector.dumpframes = False
+        detector.dumpframes = True
         # Modify frames
         vid_output = vid_input.fl_image(detector.overlay_lane)
         # Save video
@@ -198,6 +199,6 @@ if __name__ == "__main__":
             )
         
     # detect_clip(3,6)
-    # detect_full()
+    detect_full()
     # detectncalculate_clip(14,19)
-    detectncalculate_full()
+    # detectncalculate_full()
