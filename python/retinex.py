@@ -162,7 +162,7 @@ if __name__ == "__main__":
     ## Input/output
     dir_in = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Datasets\\image-footage"
     dir_out = "C:\\Users\\User Files\\Documents\\University\\Misc\\4th Year Work\\Final Year Project\\Outputs\\Algorithm Outputs"
-    filename = "techodyssey_1080p_10.png"
+    filename = "culaneNight_1.png"
     image_in = cv2.imread(f"{dir_in}\\{filename}")
             
     def run_ssr(test:bool=False):
@@ -181,7 +181,7 @@ if __name__ == "__main__":
             ## Batch process
             for i in range(1,13):
                 logger.debug(f"i: {i}")
-                filename = f"techodyssey_1080p_{i}.png"
+                filename = f"{filename[:-5]}{i}.png"
                 image_in = cv2.imread(f"{dir_in}\\{filename}")
                 image_out = cp.asnumpy(ssr(image_in,sigma))
                 cv2.imwrite(f"{dir_out}\\retinex_ssr\\{filename[:-4]}_ssr.png",image_out)
@@ -196,7 +196,7 @@ if __name__ == "__main__":
         else:
             for i in range(1,13):
                 logger.debug(f"i: {i}")
-                filename = f"techodyssey_1080p_{i}.png"
+                filename = f"{filename[:-4]}{i}.png"
                 image_in = cv2.imread(f"{dir_in}\\{filename}")
                 image_out = cp.asnumpy(msr(image_in, sigma_arr))
                 cv2.imwrite(f"{dir_out}\\retinex_msr\\{filename[:-4]}_msr.png",image_out)
@@ -215,14 +215,16 @@ if __name__ == "__main__":
                 image_out = msrcr(image_in,sigma_arr,low_percent)
                 cv2.imwrite(f"{dir_out}\\retinex_msrcr\\test\\{filename[:-4]}_msrcr_lower{low_percent}.png",image_out)
         else:
-            for i in range(1,13):
+            for i in range(1,9):
                 logger.debug(f"i: {i}")
-                filename = f"techodyssey_1080p_{i}.png"
+                filename = f"{filename[:-5]}{i}.png"
                 image_in = cv2.imread(f"{dir_in}\\{filename}")
                 image_out = msrcr(image_in,sigma_arr,low_percent)
                 cv2.imwrite(f"{dir_out}\\retinex_msrcr\\{filename[:-4]}_msrcr.png",image_out)
+                logger.debug(f"{dir_out}\\retinex_msrcr\\{filename[:-4]}_msrcr.png")
+
     
 
-    run_ssr(test=False)
+    # run_ssr(test=False)
     # run_msr(test=False)
-    # run_msrcr(test=True)
+    run_msrcr(test=False)
