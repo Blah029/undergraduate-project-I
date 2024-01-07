@@ -19,14 +19,20 @@ This project presents an innovative, deep learning-based approach for enhancing 
 ## Files
 
 - jupyter
-  - single_frame_detevtion.ipynb  
-    Load FCNN model and perform semantic segmentation for a single frame
+  - pickle_datset_processing.ipynb  
+    Compile black and white labels from CVAT masks
+  - pickle_datset_exporting.ipynb  
+    Generate pickle files from images and labels
+  - fcnn_model_training_v2.ipynb  
+    Train semantic FCNN model for semantic segmentation
   - unet_night_model_training.ipynb  
     Train and test U-Net model for night time lane detection improvement
   - unet_rain_model_testing.ipynb  
     Test U-Net model for night time lane detection improvement
   - unet_rain_model_training.ipynb  
     Train U-Net model for lane detection improvement in rain
+  - single_frame_detevtion.ipynb  
+    Load FCNN model and perform semantic segmentation for a single frame
   - utils.ipynb  
     Utility functions use throughout the project
 <br><br>
